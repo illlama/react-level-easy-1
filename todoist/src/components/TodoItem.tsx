@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { Todo } from 'modules/todos';
+import 'scss/Todo.scss';
 
 type TodoItemProps = {
   todo: Todo;

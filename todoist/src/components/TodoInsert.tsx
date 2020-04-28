@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addTodo } from 'modules/todos';
+import { Button, Input, Form } from 'antd';
+import 'scss/Todo.scss';
 
 const TodoInsert = () => {
   const [value, setValue] = useState('');
@@ -8,22 +10,28 @@ const TodoInsert = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onFinish = (e: any) => {
     console.log(value);
     dispatch(addTodo(value));
     setValue('');
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <input
-        placeholder="Complete your todoist."
-        value={value}
-        onChange={onChange}
-      />
-      <button type="submit">Submit</button>
-    </form>
+    <Form onFinish={onFinish} className="formTodo">
+      <Form.Item
+        label="Value"
+        name="value"
+        rules={[{ required: true, message: 'Please input your todo!' }]}
+        className="inputTodo"
+      >
+        <Input onChange={onChange} placeholder="Complete your todoist." />
+      </Form.Item>
+      <Form.Item>
+        <Button htmlType="submit" className="inputTodo_button">
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
