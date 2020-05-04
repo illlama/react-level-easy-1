@@ -1,4 +1,6 @@
 const ADD_TODO = 'todos/ADD_TODO' as const;
+const TOOGLE_TODO = 'todos/TOGGLE_TODO' as const;
+const REMOVE_TODO = 'todos/REMOVE_TODO' as const;
 
 ////////////////////////////
 ///        Type          ///
@@ -6,6 +8,7 @@ const ADD_TODO = 'todos/ADD_TODO' as const;
 export type Todo = {
   id: number;
   text: string;
+  memo?: string;
   done: boolean;
   date: number;
 };
@@ -15,21 +18,39 @@ type TodosState = Todo[];
 ///    InitialState      ///
 ////////////////////////////
 const initialState: TodosState = [
-  { id: 1, text: 'coco project', done: false, date: 0 },
-  { id: 2, text: 'todolist 초기 세팅', done: true, date: 0 },
-  { id: 3, text: 'Drink water', done: true, date: 0 },
+  { id: 1, text: 'coco project', done: false, date: 0, memo: 'fake data' },
+  {
+    id: 2,
+    text: 'todolist 초기 세팅',
+    done: true,
+    date: 0,
+    memo:
+      'fake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake datafake data',
+  },
+  { id: 3, text: 'Drink water', done: true, date: 0, memo: 'fake data' },
 ];
 
 ////////////////////////////
 ///       Actions        ///
 ////////////////////////////
-export const addTodo = (text: string) => ({
+export const addTodo = (text: string, memo: string) => ({
   type: ADD_TODO,
-  payload: text,
+  payload: { text, memo },
+});
+export const toggleTodo = (id: number) => ({
+  type: TOOGLE_TODO,
+  payload: id,
+});
+export const removeTodo = (id: number) => ({
+  type: REMOVE_TODO,
+  payload: id,
 });
 
 /// Actions의 ts type 준비
-type TodosAction = ReturnType<typeof addTodo>;
+type TodosAction =
+  | ReturnType<typeof addTodo>
+  | ReturnType<typeof toggleTodo>
+  | ReturnType<typeof removeTodo>;
 
 ////////////////////////////
 ///       Reducer        ///
@@ -44,10 +65,17 @@ const todos = (
       const now = Date.now();
       return state.concat({
         id: nextId,
-        text: action.payload,
+        text: action.payload.text,
+        memo: action.payload.memo,
         done: false,
         date: now,
       });
+    case TOOGLE_TODO:
+      return state.map((todo) =>
+        todo.id === action.payload ? { ...todo, done: !todo.done } : todo,
+      );
+    case REMOVE_TODO:
+      return state.filter((todo) => todo.id !== action.payload);
     default:
       return state;
   }
