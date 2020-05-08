@@ -54,17 +54,14 @@
       align-items: center;
       justify-content: space-around;
       padding-left: 60px;
-      .todoRemove {
-      }
-      .todoModify {
-      }
+
       .todoDone {
         width: 20px;
         height: 20px;
         border-radius: 10px;
         background-color: #235a99;
-        :hover {
-          cursor: default;
+        &:hover {
+          cursor: pointer;
         }
         &.done {
           background-color: #888;
@@ -75,9 +72,9 @@
   .todoMemo {
     margin: 20px 0;
     width: 80%;
+    &.done {
+      color: #ddd;
+      text-decoration: line-through;
+    }
   }
-}
-
-.modifyTitle {
-  width: 400px;
 }

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React, { useState, memo } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
-import { Todo, toggleTodo, removeTodo } from 'modules/todos';
+import { Todo, toggleTodo, removeTodo, modifyTodo } from 'modules/todos';
 import { Button, Input, Form, Row, Col } from 'antd';
 
 import 'scss/Todo.scss';
@@ -30,26 +30,15 @@ const TodoItem = ({ todo }: TodoItemProps) => {
       setMemoDisplay(!memoDisplay);
     }
   };
-  const modifyContent = () => {
+  const onModify = () => {
     setModify(!modify);
-    setMemoDisplay(!memoDisplay);
+    setMemoDisplay(true);
   };
-  const Memo = () => {
-    if (memoDisplay) {
-      return modify ? (
-        <Input.TextArea
-          className="todoMemo"
-          onChange={(e) => setModifyMemo(e.target.value)}
-          placeholder="Add description about yout todo content."
-          autoSize={{ minRows: 5, maxRows: 30 }}
-        />
-      ) : (
-        <p className="todoMemo">{todo.memo}</p>
-      );
-    } else {
-      return null;
-    }
+  const modifyContent = (id: number) => {
+    dispatch(modifyTodo(modifyTitle, modifyMemo, id));
+    setModify(false);
   };
+
   return (
     <div className="todoBox">
       <li className={`todoItem ${todo.done ? 'done' : ''}`}>
@@ -58,13 +47,14 @@ const TodoItem = ({ todo }: TodoItemProps) => {
           onClick={onMemoDisplay}
         >
           {modify ? (
-            <Form.Item name="value" style={{ width: 200, float: 'left' }}>
-              <Input
-                onChange={(e) => setModifyTitle(e.target.value)}
-                placeholder={todo.text}
-                className="modifyTitle"
-              />
-            </Form.Item>
+            <Form>
+              <Form.Item>
+                <Input
+                  onChange={(e) => setModifyTitle(e.target.value)}
+                  defaultValue={modifyTitle}
+                />
+              </Form.Item>
+            </Form>
           ) : (
             <span>{todo.text}</span>
           )}
@@ -75,7 +65,7 @@ const TodoItem = ({ todo }: TodoItemProps) => {
           <span className="todoRemove" onClick={() => onRemove(todo.id)}>
             ❌
           </span>
-          <span className="todoModify" onClick={modifyContent}>
+          <span className="todoModify" onClick={onModify}>
             🖋
           </span>
           <div
@@ -86,7 +76,31 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 
         <br />
       </li>
-      <Memo />
+      {memoDisplay ? (
+        modify ? (
+          <Form onFinish={() => modifyContent(todo.id)}>
+            <Form.Item>
+              <Input.TextArea
+                className="todoMemo"
+                onChange={(e) => setModifyMemo(e.target.value)}
+                value={modifyMemo}
+                autoSize={{ minRows: 5, maxRows: 30 }}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                htmlType="submit"
+                type="primary"
+                style={{ marginBottom: '20px' }}
+              >
+                Modify
+              </Button>
+            </Form.Item>
+          </Form>
+        ) : (
+          <p className={`todoMemo ${todo.done ? 'done' : ''}`}>{todo.memo}</p>
+        )
+      ) : null}
     </div>
   );
 };

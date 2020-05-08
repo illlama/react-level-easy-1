@@ -1,6 +1,7 @@
 const ADD_TODO = 'todos/ADD_TODO' as const;
 const TOOGLE_TODO = 'todos/TOGGLE_TODO' as const;
 const REMOVE_TODO = 'todos/REMOVE_TODO' as const;
+const MODIFY_TODO = 'todos/MODIFY_TODO' as const;
 
 ////////////////////////////
 ///        Type          ///
@@ -8,7 +9,7 @@ const REMOVE_TODO = 'todos/REMOVE_TODO' as const;
 export type Todo = {
   id: number;
   text: string;
-  memo?: string;
+  memo: string;
   done: boolean;
   date: number;
 };
@@ -45,12 +46,17 @@ export const removeTodo = (id: number) => ({
   type: REMOVE_TODO,
   payload: id,
 });
+export const modifyTodo = (text: string, memo: string, id: number) => ({
+  type: MODIFY_TODO,
+  payload: { text, memo, id },
+});
 
 /// Actions의 ts type 준비
 type TodosAction =
   | ReturnType<typeof addTodo>
   | ReturnType<typeof toggleTodo>
-  | ReturnType<typeof removeTodo>;
+  | ReturnType<typeof removeTodo>
+  | ReturnType<typeof modifyTodo>;
 
 ////////////////////////////
 ///       Reducer        ///
@@ -76,6 +82,12 @@ const todos = (
       );
     case REMOVE_TODO:
       return state.filter((todo) => todo.id !== action.payload);
+    case MODIFY_TODO:
+      return state.map((todo) =>
+        todo.id === action.payload.id
+          ? { ...todo, text: action.payload.text, memo: action.payload.memo }
+          : todo,
+      );
     default:
       return state;
   }
